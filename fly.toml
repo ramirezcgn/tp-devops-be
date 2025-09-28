@@ -40,8 +40,6 @@ primary_region = "gru"
     timeout = "5s"
     tls_skip_verify = false
 
-[processes]
-  app = "npm start"
 
 [[vm]]
   cpu_kind = "shared"
