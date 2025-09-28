@@ -1,13 +1,24 @@
 import request from 'supertest';
 import app from './app';
 
-jest.mock('./models/ToDo', () => ({
-  findAll: jest
-    .fn()
-    .mockResolvedValue([{ id: 1, title: 'Test todo', completed: false }]),
-  create: jest
-    .fn()
-    .mockResolvedValue({ id: 2, title: 'Test todo', completed: false }),
+// Mock del todoService en lugar del modelo
+jest.mock('./services/todoService', () => ({
+  __esModule: true,
+  default: {
+    getAll: jest
+      .fn()
+      .mockResolvedValue([{ id: 1, title: 'Test todo', completed: false }]),
+    create: jest
+      .fn()
+      .mockResolvedValue({ id: 2, title: 'Test todo', completed: false }),
+    get: jest
+      .fn()
+      .mockResolvedValue({ id: 1, title: 'Test todo', completed: false }),
+    update: jest
+      .fn()
+      .mockResolvedValue({ id: 1, title: 'Updated todo', completed: true }),
+    destroy: jest.fn().mockResolvedValue(true),
+  },
 }));
 
 describe('API /api/todos', () => {
