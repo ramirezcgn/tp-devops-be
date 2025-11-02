@@ -11,6 +11,14 @@ const app = express();
 // configure to only allow requests from certain origins
 app.use(cors());
 
+// Add custom headers to identify pod
+app.use((req, res, next) => {
+  const podName = process.env.HOSTNAME || 'unknown-pod';
+  res.setHeader('X-Pod-Name', podName);
+  res.setHeader('X-Served-By', `pod-${podName}`);
+  next();
+});
+
 // secure express app
 app.use(
   helmet({
