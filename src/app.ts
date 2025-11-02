@@ -3,6 +3,8 @@ import helmet from 'helmet';
 import cors from 'cors';
 //import auth from './policies/auth.policy';
 import todoRoutes from './routes/todo.routes';
+import { register } from './config/metrics';
+import { metricsMiddleware } from './middlewares/metrics.middleware';
 
 // create express app
 const app = express();
@@ -10,6 +12,9 @@ const app = express();
 // allow cross origin requests
 // configure to only allow requests from certain origins
 app.use(cors());
+
+// Add metrics middleware (before other middlewares)
+app.use(metricsMiddleware);
 
 // Add custom headers to identify pod
 app.use((req, res, next) => {
@@ -42,6 +47,17 @@ const sendResponse = (res, statusCode, response) => {
     res.end(JSON.stringify(response));
   }
 };
+
+// Prometheus metrics endpoint
+app.get('/metrics', async (req, res) => {
+  try {
+    res.set('Content-Type', register.contentType);
+    const metrics = await register.metrics();
+    res.end(metrics);
+  } catch (err) {
+    res.status(500).end(err);
+  }
+});
 
 // endpoint path to monitor the service
 app.get('/health', (req, res) => {
