@@ -5,6 +5,7 @@ import cors from 'cors';
 import todoRoutes from './routes/todo.routes';
 import { register } from './config/metrics';
 import { metricsMiddleware } from './middlewares/metrics.middleware';
+import { loggingMiddleware, logger } from './middlewares/logger.middleware';
 
 // create express app
 const app = express();
@@ -12,6 +13,9 @@ const app = express();
 // allow cross origin requests
 // configure to only allow requests from certain origins
 app.use(cors());
+
+// Add logging middleware FIRST (before other middlewares)
+app.use(loggingMiddleware);
 
 // Add metrics middleware (before other middlewares)
 app.use(metricsMiddleware);
@@ -75,7 +79,15 @@ app.use(
     res: express.Response,
     //next: express.NextFunction,
   ) => {
-    //console.error(err.stack || err);
+    // Log estructurado del error
+    logger.error({
+      err,
+      method: req.method,
+      url: req.url,
+      statusCode: err.status || 500,
+      msg: 'Request error',
+    });
+
     sendResponse(res, err.status || 500, {
       error: {
         message: err.message || 'Internal Server Error',

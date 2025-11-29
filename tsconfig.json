@@ -4,13 +4,13 @@
     "target": "esnext",
     "module": "esnext",
     "lib": [
-      "dom",
       "esnext"
     ],
     "allowJs": true,
     "checkJs": false,
     "composite": true,
     "noEmit": false,
+    "outDir": "./dist",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
