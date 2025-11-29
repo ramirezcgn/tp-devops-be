@@ -2,6 +2,7 @@ import toDoRepository from '../repositories/ToDoRepository';
 import redis from '../config/redis';
 import { trace, SpanStatusCode } from '@opentelemetry/api';
 import { logWithTrace } from '../middlewares/logger.middleware';
+import { cacheHits, cacheMisses } from '../config/metrics.js';
 
 const tracer = trace.getTracer('devops-be-service');
 
@@ -19,6 +20,14 @@ export class ToDoService {
           redisSpan.setAttribute('redis.key', cacheKey);
           const result = await redis.get(cacheKey);
           redisSpan.setAttribute('redis.hit', !!result);
+
+          // Métricas de cache
+          if (result) {
+            cacheHits.inc({ cache_key_pattern: 'todo:*' });
+          } else {
+            cacheMisses.inc({ cache_key_pattern: 'todo:*' });
+          }
+
           logWithTrace('info', result ? 'Cache hit' : 'Cache miss', { cacheKey });
           redisSpan.end();
           return result;
@@ -69,6 +78,14 @@ export class ToDoService {
           redisSpan.setAttribute('redis.key', cacheKey);
           const result = await redis.get(cacheKey);
           redisSpan.setAttribute('redis.hit', !!result);
+
+          // Métricas de cache
+          if (result) {
+            cacheHits.inc({ cache_key_pattern: 'todos:all:*' });
+          } else {
+            cacheMisses.inc({ cache_key_pattern: 'todos:all:*' });
+          }
+
           logWithTrace('info', result ? 'Cache hit' : 'Cache miss', { cacheKey });
           redisSpan.end();
           return result;

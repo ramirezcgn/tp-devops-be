@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 //import auth from './policies/auth.policy';
 import todoRoutes from './routes/todo.routes';
+import stressRoutes from './routes/stress.routes';
 import { register } from './config/metrics';
 import { metricsMiddleware } from './middlewares/metrics.middleware';
 import { loggingMiddleware, logger } from './middlewares/logger.middleware';
@@ -70,6 +71,7 @@ app.get('/health', (req, res) => {
 
 // fill routes for express application
 app.use('/api/todos', todoRoutes);
+app.use('/api/stress', stressRoutes);
 
 // Manejo global de errores
 app.use(
