@@ -66,7 +66,18 @@ app.get('/metrics', async (req, res) => {
 
 // endpoint path to monitor the service
 app.get('/health', (req, res) => {
-  sendResponse(res, 200, { status: 'ok' });
+  sendResponse(res, 200, {
+    status: 'ok',
+    hostname: process.env.HOSTNAME || 'unknown',
+  });
+});
+
+// Also expose health on /api/health for consistency
+app.get('/api/health', (req, res) => {
+  sendResponse(res, 200, {
+    status: 'ok',
+    hostname: process.env.HOSTNAME || 'unknown',
+  });
 });
 
 // fill routes for express application
